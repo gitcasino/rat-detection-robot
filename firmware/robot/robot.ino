@@ -18,7 +18,7 @@
 #include "config.h"
 #include "emitter.h"
 #include "motors.h"
-#include "network.h"
+#include "robot_network.h"
 #include "robot_logic.h"
 #include "sensors.h"
 #include "telemetry.h"
@@ -55,14 +55,14 @@ telemetry::Snapshot build_snapshot(uint32_t now_ms) {
   snapshot.emitter_ready = emitter::ready();
   snapshot.drive_ready = motors::ready();
 
-  snapshot.wifi_connected = network::connected();
-  snapshot.rssi = network::status().rssi;
-  snapshot.ip = network::status().ip;
-  snapshot.ssid = network::status().ssid;
+  snapshot.wifi_connected = robot_network::connected();
+  snapshot.rssi = robot_network::status().rssi;
+  snapshot.ip = robot_network::status().ip;
+  snapshot.ssid = robot_network::status().ssid;
 
   snapshot.uptime_ms = now_ms - g_boot_ms;
-  snapshot.clock_valid = network::clock_valid();
-  snapshot.timestamp = network::iso8601();
+  snapshot.clock_valid = robot_network::clock_valid();
+  snapshot.timestamp = robot_network::iso8601();
   return snapshot;
 }
 
@@ -72,7 +72,7 @@ void report_configuration(const telemetry::Snapshot &snapshot) {
   }
   g_config_reported = true;
 
-  if (!network::credentials_configured()) {
+  if (!robot_network::credentials_configured()) {
     Serial.println(F("[boot] WIFI_SSID is empty: telemetry disabled, robot runs locally"));
     telemetry::record(telemetry::EventType::Error, snapshot,
                       "WIFI_SSID not configured; telemetry disabled");
@@ -161,7 +161,7 @@ void setup() {
   motors::begin();
   sensors::begin();
   telemetry::begin();
-  network::begin();
+  robot_network::begin();
 
   // Nothing may drive before the arm delay expires.
   motors::stop();
@@ -172,7 +172,7 @@ void setup() {
 void loop() {
   const uint32_t now = millis();
 
-  network::tick(now);
+  robot_network::tick(now);
   sensors::poll(now);
 
   const sensors::State &sensor_state = sensors::state();
@@ -221,16 +221,16 @@ void loop() {
   static bool previous_ir = false;
   track_sensor_edges(sensor_state, previous_vibration, previous_ir, snapshot);
 
-  if (network::connected() && !g_announced_online) {
+  if (robot_network::connected() && !g_announced_online) {
     g_announced_online = true;
     telemetry::record(telemetry::EventType::DeviceOnline, snapshot, "Robot associated with Wi-Fi");
-  } else if (!network::connected()) {
+  } else if (!robot_network::connected()) {
     g_announced_online = false;
   }
 
 #if CFG_EMIT_HEARTBEAT_EVENTS
   static uint32_t last_heartbeat_ms = 0;
-  if (network::connected() && (now - last_heartbeat_ms) >= CFG_HEARTBEAT_INTERVAL_MS) {
+  if (robot_network::connected() && (now - last_heartbeat_ms) >= CFG_HEARTBEAT_INTERVAL_MS) {
     last_heartbeat_ms = now;
     telemetry::record(telemetry::EventType::Heartbeat, snapshot, "Device heartbeat");
   }

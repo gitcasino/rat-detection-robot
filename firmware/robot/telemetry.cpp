@@ -7,7 +7,7 @@
 
 #include "config.h"
 #include "json_writer.h"
-#include "network.h"
+#include "robot_network.h"
 
 namespace telemetry {
 namespace {
@@ -306,7 +306,7 @@ void record(EventType type, const Snapshot &snapshot, const char *message) {
 }
 
 void flush(uint32_t now_ms, const Snapshot &snapshot) {
-  if (!network::connected() || !configured()) {
+  if (!robot_network::connected() || !configured()) {
     return;
   }
   if (now_ms < g_retry_at_ms) {

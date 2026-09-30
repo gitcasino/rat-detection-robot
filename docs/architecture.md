@@ -25,7 +25,7 @@ never commands hardware.
 
 `firmware/robot/robot.ino` is a single non-blocking loop:
 
-1. `network::tick` advances the Wi-Fi reconnect state machine and keeps NTP fresh.
+1. `robot_network::tick` advances the Wi-Fi reconnect state machine and keeps NTP fresh.
 2. `sensors::poll` runs the HC-SR04 echo state machine and debounces the digital
    channels. Nothing waits for a measurement.
 3. `robotlogic::Controller::update` decides the next `RobotState` and the requested

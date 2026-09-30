@@ -1,10 +1,10 @@
-#include "network.h"
+#include "robot_network.h"
 
 #include <WiFi.h>
 
 #include "config.h"
 
-namespace network {
+namespace robot_network {
 namespace {
 
 // Anything before 2020 means NTP has not completed, so device timestamps are
@@ -133,4 +133,4 @@ String iso8601() {
   return String(buffer);
 }
 
-}  // namespace network
+}  // namespace robot_network

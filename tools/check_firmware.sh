@@ -30,7 +30,7 @@ echo "==> firmware control logic and JSON writer (native tests)"
 "$OUT_DIR/json_writer_test"
 
 echo "==> Arduino-facing sources (syntax check against API stubs)"
-for source in sensors.cpp emitter.cpp motors.cpp network.cpp telemetry.cpp; do
+for source in sensors.cpp emitter.cpp motors.cpp robot_network.cpp telemetry.cpp; do
   printf '    %s\n' "$source"
   "$CXX" -std=c++17 -Wall -Wextra -Werror -fsyntax-only \
     -DESP32=1 -DARDUINO=10819 \
