@@ -151,7 +151,3 @@ stream-driven updates and the three link states (live, degraded, offline).
   would let the system report verified output instead of a commanded state.
 - A single SQLite file is used for persistence, which is ample for one robot but
   not for a fleet.
-
-## License
-
-MIT. See [LICENSE](LICENSE).
